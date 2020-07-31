@@ -1,3 +1,9 @@
 #index:
 #    path: /test/
 #    controller: App\Controller\TestController.test
+articles:
+    path: /api
+    defaults:
+        _controller: '\Controller\TestController::index'
+        _api_resource_class: 'App\Entity\Article'
+        _api_collection_operation_name: 'article_name'

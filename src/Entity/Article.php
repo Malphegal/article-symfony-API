@@ -12,7 +12,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *  normalizationContext={"groups"={"article:read"}},
- *  denormalizationContext={"groups"={"article:write"}}
+ *  denormalizationContext={"groups"={"article:write"}},
+ *  collectionOperations={
+ *      "get","post",
+ *      "article_name"={"route_name"="api"}
+ *  }
  * )
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  */
@@ -69,9 +73,17 @@ class Article
      */
     private $image;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="articles")
+     * 
+     * @Groups({"article:read"})
+     */
+    private $tags;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,6 +178,32 @@ class Article
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->contains($tag)) {
+            $this->tags->removeElement($tag);
+        }
 
         return $this;
     }
